@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
 
   // Options and input/output file setting.
   options = clan_options_read(argc, argv, &input_files, &output);
-
+  //printf("===TER CLAN===\n"); //TODO remove
   i = 0;
   while (input_files[i]) {
     if (options->name)
@@ -85,11 +85,11 @@ int main(int argc, char* argv[]) {
         scop = clan_scop_extract(input, options);
         fclose(input);
       }
-  
+
       // Printing of the internal data structure of the SCoP if asked.
       if (options->structure)
         osl_scop_dump(stdout, scop);
-  
+
       if (!options->autopragma && !options->autoinsert) {
         // Generation of the .scop output file.
         clan_scop_print(output, scop, options);
