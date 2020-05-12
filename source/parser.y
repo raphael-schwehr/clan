@@ -1138,7 +1138,7 @@ affine_expression:
   | affine_expression '%' INTEGER //ici
   {
       CLAN_debug("rule affine_expression.4: "
-            "affine_expression % INTEGER");
+            "affine_expression %% INTEGER");
       printf("modulo\n");
   }
   ;
