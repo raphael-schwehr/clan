@@ -140,7 +140,7 @@
 %}
 
 /* We expect the if-then-else shift/reduce to be there, nothing else. */
-%expect 9 // TODO: should be 1 !!! (cause : labeled_statement)
+%expect 8 // TODO: should be 1 !!! (cause : labeled_statement)
 
 %union { int value;                      /**< An integer value */
          int* vecint;                    /**< A vector of integer values */
@@ -1135,13 +1135,18 @@ affine_expression:
       osl_vector_free($3);
       CLAN_debug_call(osl_vector_dump(stderr, $$));
   }
-  | affine_expression '%' INTEGER //ici
-  {
-      CLAN_debug("rule affine_expression.4: "
-            "affine_expression %% INTEGER");
-      $$ = $1;
-  }
-
+  // | affine_expression '%' INTEGER //ici
+  // {
+  //     CLAN_debug("rule affine_expression.4: "
+  //           "affine_expression %% INTEGER");
+  //       //osl_int_set_si(parser_options->precision,
+  //       //               &($1->v[CLAN_MAX_DEPTH + 1 + clan_parser_nb_ld()]), -$3);
+  //   //osl_int_add_si(parser_options->precision,
+  // 	  //           &($1->v[$1->size - 1]), $1->v[$1->size - 1], -$3);
+  //       //clan_parser_add_ld();
+  //           //$$ = osl_vector_mul_scalar($1, $3);
+  //     $$ = $1;
+  // }
   ;
 
 
@@ -1366,6 +1371,20 @@ postfix_expression:
         osl_extbody_add(parser_access_extbody, -1, -1);
       }
     }
+    | postfix_expression '[' affine_expression '%' INTEGER ']' //là
+      {
+        if (parser_options->extbody)
+          parser_access_length = strlen(parser_record) - parser_access_start;
+
+        CLAN_debug("rule postfix_expression.7: \
+                                postfix_expression [ <affex> % INTEGER]");
+        if (!clan_symbol_update_type(parser_symbol, $1, CLAN_TYPE_ARRAY))
+          YYABORT;
+        clan_relation_new_output_vector($1->elt, $3);
+        osl_vector_free($3);
+        $$ = $1;
+        CLAN_debug_call(osl_relation_list_dump(stderr, $$));
+      }
   ;
 
 argument_expression_list:
