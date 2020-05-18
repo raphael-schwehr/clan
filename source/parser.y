@@ -1135,18 +1135,6 @@ affine_expression:
       osl_vector_free($3);
       CLAN_debug_call(osl_vector_dump(stderr, $$));
   }
-  // | affine_expression '%' INTEGER //ici
-  // {
-  //     CLAN_debug("rule affine_expression.4: "
-  //           "affine_expression %% INTEGER");
-  //       //osl_int_set_si(parser_options->precision,
-  //       //               &($1->v[CLAN_MAX_DEPTH + 1 + clan_parser_nb_ld()]), -$3);
-  //   //osl_int_add_si(parser_options->precision,
-  // 	  //           &($1->v[$1->size - 1]), $1->v[$1->size - 1], -$3);
-  //       //clan_parser_add_ld();
-  //           //$$ = osl_vector_mul_scalar($1, $3);
-  //     $$ = $1;
-  // }
   ;
 
 
@@ -1380,6 +1368,9 @@ postfix_expression:
                                 postfix_expression [ <affex> % INTEGER]");
         if (!clan_symbol_update_type(parser_symbol, $1, CLAN_TYPE_ARRAY))
           YYABORT;
+        $1->elt->nb_local_dims++;
+        //osl_int_add_si(parser_options->precision,
+        //           &($3->v[$3->size - 1]), $3->v[$3->size - 1], -$5);
         clan_relation_new_output_vector($1->elt, $3);
         osl_vector_free($3);
         $$ = $1;
