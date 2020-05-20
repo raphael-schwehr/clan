@@ -52,7 +52,6 @@ int main(int argc, char* argv[]) {
 
   // Options and input/output file setting.
   options = clan_options_read(argc, argv, &input_files, &output);
-  //printf("===TER CLAN===\n"); //TODO remove
   i = 0;
   while (input_files[i]) {
     if (options->name)

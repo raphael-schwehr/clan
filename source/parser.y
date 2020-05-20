@@ -1364,14 +1364,26 @@ postfix_expression:
         if (parser_options->extbody)
           parser_access_length = strlen(parser_record) - parser_access_start;
 
-        CLAN_debug("rule postfix_expression.7: \
-                                postfix_expression [ <affex> % INTEGER]");
+        CLAN_debug("rule postfix_expression.7:"
+                                "postfix_expression [ <affex> %% INTEGER]");
         if (!clan_symbol_update_type(parser_symbol, $1, CLAN_TYPE_ARRAY))
           YYABORT;
-        $1->elt->nb_local_dims++;
-        //osl_int_add_si(parser_options->precision,
-        //           &($3->v[$3->size - 1]), $3->v[$3->size - 1], -$5);
+
         clan_relation_new_output_vector($1->elt, $3);
+
+        /* handling modulo */
+            osl_relation_insert_blank_row($1->elt,1);
+            //Setting modulo inequality vector in current output dimension
+            osl_int_set_si($1->elt->precision,&($1->elt->m[1][0]),1);
+            osl_int_set_si($1->elt->precision,
+                                  &($1->elt->m[1][$1->elt->nb_output_dims]),-1);
+            osl_int_set_si($1->elt->precision,
+                                  &($1->elt->m[1][$1->elt->nb_columns-1]),$5-1);
+            //Setting local dimension in the vector based on the <affex>
+            osl_int_set_si($1->elt->precision,
+                       &($1->elt->m[$1->elt->nb_rows-1][CLAN_MAX_DEPTH+1]),-$5);
+            $1->elt->nb_local_dims++;
+        /* /handling modulo */
         osl_vector_free($3);
         $$ = $1;
         CLAN_debug_call(osl_relation_list_dump(stderr, $$));
